@@ -108,7 +108,7 @@ def main():
     global p,q,k
     p = 8
     q = 4
-    k = 4
+    k = 3
     KNN(tree, 0)
 
     print("distance", "co-ordinates")
