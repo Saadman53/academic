@@ -56,7 +56,7 @@ def Edis(p,q,x,y):
 
 
 # find the k-nearest neighbors
-def KNN(subtree, depth):
+def KNN(subtree, axis):
     global pqSize,k
     if(subtree == None):
         return
@@ -64,7 +64,7 @@ def KNN(subtree, depth):
     nextBranch = otherBranch = Node(key=None, left=None, right=None)
     # decide which subtree to visit first
     x,y = subtree.key
-    if(depth == 0):
+    if(axis == 0):
         # x-axis
         nextBranch, otherBranch = (subtree.left, subtree.right) if(p < x) else (subtree.right, subtree.left)
     else:
@@ -72,7 +72,7 @@ def KNN(subtree, depth):
         nextBranch, otherBranch = (subtree.left, subtree.right) if(q < y) else (subtree.right, subtree.left)
     
 
-    KNN(nextBranch, depth+1)
+    KNN(nextBranch, axis^1)
 
     # find the distance between the query point and the current subtree root
     distance = Edis(p,q,subtree.key[0], subtree.key[1])
@@ -91,9 +91,9 @@ def KNN(subtree, depth):
     worstbest = priorityQ.get()
     priorityQ.put(worstbest)
     radius = Edis(p,q,subtree.key[0], subtree.key[1])
-    dist = abs(p-x) if(depth == 0) else abs(q-y)
+    dist = abs(p-x) if(axis == 0) else abs(q-y)
     if(radius >= dist):
-        KNN(otherBranch, depth+1)
+        KNN(otherBranch, axis^1)
     
     return
     
@@ -119,3 +119,72 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# priority queue
+class priQueue:
+    def __init__(self):
+        self.pq_arr = []
+        self.size = 0
+
+    def put(self, item):
+        self.size += 1
+        self.pq_arr.append(item)
+        self.pq_arr.sort(reverse=True)
+
+    def get(self):
+        if(self.size == 0):
+            return
+        self.size -= 1
+        top = self.pq_arr[0]
+        self.pq_arr.pop(0)
+        return top

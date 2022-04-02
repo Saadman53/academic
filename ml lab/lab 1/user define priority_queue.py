@@ -6,17 +6,19 @@ class Node:
 
 
 
-def kdtree(point_list, axis=0):
+def kdtree(point_list, depth=0):
     if not point_list:
         return None    
     
+
+    axis = depth%len(point_list[0])
     point_list.sort(key=lambda p: p[axis])
-    
+
     median = len(point_list) // 2
 
     newNode = Node(point_list[median])
-    newNode.left = kdtree(point_list[:median], axis^1)
-    newNode.right = kdtree(point_list[median + 1:], axis^1)
+    newNode.left = kdtree(point_list[:median], depth+1)
+    newNode.right = kdtree(point_list[median + 1:], depth+1)
     return newNode
 
 
@@ -66,6 +68,7 @@ def KNN(subtree, depth):
     nextBranch = otherBranch = Node(key=None, left=None, right=None)
     # decide which subtree to visit first
     x,y = subtree.key
+    depth %= len(subtree.key)
     if(depth == 0):
         # x-axis
         nextBranch, otherBranch = (subtree.left, subtree.right) if(p < x) else (subtree.right, subtree.left)
@@ -79,13 +82,13 @@ def KNN(subtree, depth):
     # find the distance between the query point and the current subtree root
     distance = Edis(p,q,subtree.key[0], subtree.key[1])
     if(pq.size < k):
-        pq.put((-1*distance, subtree.key))
+        pq.put((1*distance, subtree.key))
     else:
         top = pq.get()
-        if(top[0]*-1 < distance):
+        if(top[0]*1 < distance):
             pq.put(top)
         else:
-            pq.put((-distance, subtree.key))
+            pq.put((distance, subtree.key))
 
     
     # check if the other subtree has any points
@@ -113,14 +116,14 @@ def main():
     global p,q,k
     p = 8
     q = 4
-    k = 2
+    k = 3
     KNN(tree, 0)
 
     print("distance", "co-ordinates")
 
     while(pq.size > 0):
         x = pq.get()
-        print(format(x[0]*-1,".2f"), " -> ", x[1])
+        print(format(x[0],".2f"), " -> ", x[1])
 
 if __name__ == "__main__":
     main()
