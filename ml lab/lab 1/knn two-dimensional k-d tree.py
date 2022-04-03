@@ -61,18 +61,16 @@ def KNN(subtree, axis):
     if(subtree == None):
         return
 
-    nextBranch = otherBranch = Node(key=None, left=None, right=None)
+    nxt = other = Node(key=None, left=None, right=None)
     # decide which subtree to visit first
     x,y = subtree.key
-    if(axis == 0):
-        # x-axis
-        nextBranch, otherBranch = (subtree.left, subtree.right) if(p < x) else (subtree.right, subtree.left)
-    else:
-        # y-axis
-        nextBranch, otherBranch = (subtree.left, subtree.right) if(q < y) else (subtree.right, subtree.left)
+    if(axis == 0): # x axis
+        nxt, other = (subtree.left, subtree.right) if(p < x) else (subtree.right, subtree.left)
+    else: # y axis
+        nxt, other = (subtree.left, subtree.right) if(q < y) else (subtree.right, subtree.left)
     
 
-    KNN(nextBranch, axis^1)
+    KNN(nxt, axis^1)
 
     # find the distance between the query point and the current subtree root
     distance = Edis(p,q,subtree.key[0], subtree.key[1])
@@ -93,7 +91,7 @@ def KNN(subtree, axis):
     radius = Edis(p,q,subtree.key[0], subtree.key[1])
     dist = abs(p-x) if(axis == 0) else abs(q-y)
     if(radius >= dist):
-        KNN(otherBranch, axis^1)
+        KNN(other, axis^1)
     
     return
     
@@ -106,13 +104,13 @@ def main():
     tree = kdtree(point_list)
     
     global p,q,k
+    
     p = 8
     q = 4
     k = 3
     KNN(tree, 0)
 
     print("distance", "co-ordinates")
-    
     while not priorityQ.empty():
         x = priorityQ.get()
         print(format(x[0]*-1,".2f"), " -> ", x[1])

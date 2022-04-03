@@ -53,31 +53,32 @@ k,p,q=0,0,0,
 
 # euclidean distance
 import math
+from re import sub
 def Edis(p,q,x,y):
     return math.sqrt((p-x)**2+(q-y)**2)
 
 
 
+queryPoint = (9,4)
 
 # find the k-nearest neighbors
 def KNN(subtree, depth):
-    global pqSize,k
+    global pqSize,k,queryPoint
     if(subtree == None):
         return
 
-    nextBranch = otherBranch = Node(key=None, left=None, right=None)
-    # decide which subtree to visit first
+    nxt = other = Node(key=None, left=None, right=None)
     x,y = subtree.key
     depth %= len(subtree.key)
     if(depth == 0):
         # x-axis
-        nextBranch, otherBranch = (subtree.left, subtree.right) if(p < x) else (subtree.right, subtree.left)
+        nxt, other = (subtree.left, subtree.right) if(p < x) else (subtree.right, subtree.left)
     else:
         # y-axis
-        nextBranch, otherBranch = (subtree.left, subtree.right) if(q < y) else (subtree.right, subtree.left)
-    
+        nxt, other = (subtree.left, subtree.right) if(q < y) else (subtree.right, subtree.left)
 
-    KNN(nextBranch, depth+1)
+
+    KNN(nxt, depth+1)
 
     # find the distance between the query point and the current subtree root
     distance = Edis(p,q,subtree.key[0], subtree.key[1])
@@ -97,7 +98,7 @@ def KNN(subtree, depth):
     radius = Edis(p,q,subtree.key[0], subtree.key[1])
     dist = abs(p-x) if(depth == 0) else abs(q-y)
     if(radius >= dist):
-        KNN(otherBranch, depth+1)
+        KNN(other, depth+1)
     
     return
     
@@ -106,17 +107,19 @@ def KNN(subtree, depth):
 
 def main():
     
-    point_list = [(7, 2), (5, 4), (9, 6), (4, 7), (8, 1), (2, 3)]
-    # point_list = [(5,4),(2,6),(13,3),(8,7),(3,1),(10,2)]
+    # point_list = [(7, 2), (5, 4), (9, 6), (4, 7), (8, 1), (2, 3)]
+    point_list = [(5,4),(2,6),(13,3),(8,7),(3,1),(10,2)]
     tree = kdtree(point_list)
     
 
 
 
     global p,q,k
-    p = 8
+    p = 9
     q = 4
-    k = 3
+    k = 2
+
+    queryPoint = (p,q)
     KNN(tree, 0)
 
     print("distance", "co-ordinates")
