@@ -1,10 +1,10 @@
-n = int(input())
+# n = int(input())
 arr = list(map(int, input().split()))
 
 
 
 # arr = [5, 8, 1, 10, 9]
-# arr = [5,4,5]
+# arr = [5,5,10,5]
 
 
 class Node:
@@ -67,28 +67,51 @@ def gameTree(arr, prev=0, depth=0, nodeid=1):
 def minimax(arr, node, depth=0, nodeid=1, prev=0):
 	# if(node is None):
 	# 	print("node ", node, "nodeid = ", nodeid, "depth = ", depth)
-	if node.left is None and node.right is None:
+	if len(arr) == 1:
 		return node.key
 
 	first, last = arr[0], arr[-1]
+
 
 	# max player
 	if depth%2 == 0:
 		x=-1
 		y=-1
 		if first > prev and node.left is not None:
-			x = minimax(arr[1:], node.left, depth+1, nodeid*2, first)
+			res = 1
+			if(len(arr) > 1):
+				res = minimax(arr[1:], node.left, depth+1, nodeid*2, first)
+			# x = minimax(arr[1:], node.left, depth+1, nodeid*2, first)
+			x=max(x, res)
 		if last > prev and node.right is not None:
-			y = minimax(arr[:-1], node.right, depth+1, nodeid*2+1, last)
+			res = 1
+			if(len(arr) > 1):
+				res = minimax(arr[:-1], node.right, depth+1, nodeid*2+1, last)
+			y = max(y, res)
+
+			# y = minimax(arr[:-1], node.right, depth+1, nodeid*2+1, last)
 		node.key = max(x, y)
 		return node.key
+
+
 	if depth%2 == 1:
 		x=1
 		y=1
 		if first > prev and node.left is not None:
-			x = minimax(arr[1:], node.left, depth+1, nodeid*2, first)
+			res = -1
+			if(len(arr) > 1):
+				res = minimax(arr[1:], node.left, depth+1, nodeid*2, first)
+			x = min(x, res)
+
+			# x = minimax(arr[1:], node.left, depth+1, nodeid*2, first)
 		if last > prev and node.right is not None:
-			y = minimax(arr[:-1], node.right, depth+1, nodeid*2+1, last)
+			res = -1
+			if(len(arr) > 1):
+				res = minimax(arr[:-1], node.right, depth+1, nodeid*2+1, last)
+			
+			y = min(y, res)
+
+			# y = minimax(arr[:-1], node.right, depth+1, nodeid*2+1, last)
 		node.key = min(x, y)
 		return node.key
 
@@ -128,6 +151,9 @@ def selectOption(arr, last_selected):
 	new_arr=[]
 	new_selected=0
 
+	print(arr)
+	print(last_selected)
+
 	selectFormLeftOrRight = input('select a number from left or right: ')
 	if selectFormLeftOrRight == 'l':
 		if arr[0] > last_selected:
@@ -135,18 +161,25 @@ def selectOption(arr, last_selected):
 			new_selected = arr[0]
 		else:
 			print('invalid selection')
+			return selectOption(arr, last_selected)
 	
 	elif selectFormLeftOrRight == 'r':
 		if arr[-1] > last_selected:
 			new_arr = arr[:-1]
 			new_selected = arr[-1]
-
+		else:
+			print('invalid selection')
+			return selectOption(arr, last_selected)
+	else:
+		print('invalid selection')
+		return selectOption(arr, last_selected)
 	
 	return new_arr, new_selected
 
 
 last_selected = 0
 while(1):
+	# 5 7 10 6
 	print(arr)
 	left = arr[0]
 	right = arr[-1]
@@ -158,6 +191,8 @@ while(1):
 	else:
 		newArr, last_selected = selectOption(arr,last_selected)
 
+
+	print(" newArr = ", newArr)
 
 	gt = gameTree(newArr, last_selected)
 	ans = minimax(newArr, gt)
