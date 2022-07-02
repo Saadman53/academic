@@ -1,3 +1,7 @@
+from hashlib import new
+from random import random
+
+
 class Node:
     def __init__(self, key=None, left=None, right=None, arr=None):
         self.game = arr
@@ -10,8 +14,8 @@ def tree(arr, depth=0, nodeid=1):
     if not arr:
         return None
     newNode = Node()
-    newNode.left = tree(arr[1:], depth+1, nodeid*2+1)
-    newNode.right = tree(arr[:-1], depth+1, nodeid*2+2)
+    newNode.left = tree(arr[1:], depth+1, nodeid*2)
+    newNode.right = tree(arr[:-1], depth+1, nodeid*2+1)
     if(newNode.left is None and newNode.right is None):
         newNode.key = arr[0]
     return newNode
@@ -32,7 +36,8 @@ def gameTree(arr, prev=0, depth=0, nodeid=1):
             newNode.key = -1
         else:
             newNode.key = 1
-
+            
+    print("current gameTree : ", arr, newNode.key)
     return newNode
 
 
@@ -66,6 +71,7 @@ def selectOption(arr, last_selected, side='x'):
 
 
 def minimax(arr, node, depth=0, nodeid=1, prev=0):
+    
     if len(arr) == 1:
         return node.key
 
@@ -86,6 +92,8 @@ def minimax(arr, node, depth=0, nodeid=1, prev=0):
                 res = minimax(arr[:-1], node.right, depth+1, nodeid*2+1, last)
             y = max(y, res)
         node.key = max(x, y)
+        
+        print("max : ", arr, node.key,nodeid)
         return node.key
 
     if depth % 2 == 1:
@@ -103,129 +111,90 @@ def minimax(arr, node, depth=0, nodeid=1, prev=0):
                 res = minimax(arr[:-1], node.right, depth+1, nodeid*2+1, last)
             y = min(y, res)
         node.key = min(x, y)
+        print("min : ", arr, node.key, nodeid)
         return node.key
-
-
 
 
 
 def gamePlay(arr, node, depth=0, prev=0):
-
-
     if len(arr) == 1:
         return node.key
-    
     print("\n\n")
-    
     first, last = arr[0], arr[-1]
     # player 1's turn
     if depth % 2 == 0:
-        
         # print("prev first last ", prev, first, last)
         if prev >= first and prev >= last:
             return -1
             print("You lost!")
             exit(0)
-        
         newArr, last_selected, side = selectOption(arr, prev)
         if len(arr):
             if side == 'left':
                 return gamePlay(newArr, node.left, depth + 1, last_selected)
             elif side == 'right':
-                return gamePlay(newArr, node.right, depth + 1, last_selected)
-                
+                return gamePlay(newArr, node.right, depth + 1, last_selected)   
     # AI's turn
     if depth % 2 == 1:
         x = 1
         y = 1
-        
         # print("AI's turn , prev, first, last arr[]", prev, first, last, arr)
         if first > prev:
             if len(arr) > 1:
-                x = min(x,node.key)
+                x = min(x, node.left.key)
         if last > prev:
             if len(arr) > 1:
-                y = min(y, node.key)
-        
-        
+                y = min(y, node.right.key)
         # print("value x, y ", x,y)
         if x == -1:
+            # print("ai select value ", arr[0])
             return gamePlay(arr[1:], node.left, depth+1, first)
         elif y == -1:
+            # print("ai select value ", arr[-1])
             return gamePlay(arr[:-1], node.right, depth+1, last)
         else:
             if first > prev and node.left is not None:
+                # print("ai select value ", arr[0])
                 return gamePlay(arr[1:], node.left, depth+1, first)
             elif last > prev and node.right is not None:
+                # print("ai select value ", arr[-1])
                 return gamePlay(arr[:-1], node.right, depth+1, last)
             else:
                 return 1
                 print("AI is LOST!")
                 exit(0)
-                
-            
-            
-    
-    
-    
+
+
 # arr = list(map(int, input().split()))
 # arr = [5, 8, 1, 10, 9]
-arr = [5, 7, 10 ,6]
+# arr = [5, 7, 10 ,6]
+
+# arr = [3, 16, 6, 14, 19]
+
+
+# def printTree(node):
+# 	if node.key is not None:
+# 		print(node.key, end=" ")
+# 	if node.left is not None:
+# 		printTree(node.left)
+# 	if node.right is not None:
+# 		printTree(node.right)
+
+# x = tree(arr,0,1)
+# printTree(x)
+
+# arr = []
+
+import random
+ncount = random.randint(3,12)
+arr = random.sample(range(1,20), ncount)
+print("ncount arr[]", ncount, arr)
+
 gt = gameTree(arr, 0)
 ans = minimax(arr, gt)
-
 play = gamePlay(arr, gt)
-
 print("play ", play)
-
 if(play == 1):
     print("You win")
 else:
     print("AI win")
-
-
-# while(1):
-# 	# 5 7 10 6
-# 	print(arr)
-# 	left = arr[0]
-# 	right = arr[-1]
-
-# 	if left < last_selected and right < last_selected:
-# 		print("Oops! You lost!")
-# 		print("Winner is AI")
-# 		break
-# 	else:
-# 		newArr, last_selected = selectOption(arr,last_selected)
-
-
-# 	print(" newArr = ", newArr)
-
-# 	gt = gameTree(newArr, last_selected)
-# 	ans = minimax(newArr, gt)
-# 	if ans == 1:
-# 		# AI have to select is option optimally
-# 		print("AI selects: ", newArr)
-
-# 		if newArr[0] > last_selected:
-# 			if gt.left is not None and gt.left.key == 1:
-# 				arr = newArr[1:]
-# 				last_selected = newArr[0]
-
-# 		elif newArr[-1] > last_selected:
-# 			if gt.right is not None and gt.right.key == 1:
-# 				arr = newArr[:-1]
-# 				last_selected = newArr[-1]
-
-# 	else:
-# 		if newArr[0] > last_selected:
-# 			arr = newArr[1:]
-# 			last_selected = newArr[0]
-# 		elif newArr[-1] > last_selected:
-# 			arr = newArr[:-1]
-# 			last_selected = newArr[-1]
-# 		else:
-# 			print("AI is lost")
-# 			break
-
-
-# 	print("last selected: ", last_selected)
