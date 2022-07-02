@@ -1,5 +1,8 @@
-from hashlib import new
-from random import random
+from ast import Not
+from itertools import count
+import random
+from time import time
+from turtle import right
 
 
 class Node:
@@ -36,12 +39,14 @@ def gameTree(arr, prev=0, depth=0, nodeid=1):
             newNode.key = -1
         else:
             newNode.key = 1
-            
-    print("current gameTree : ", arr, newNode.key)
+
+    # print("current gameTree : ", arr, newNode.key)
     return newNode
 
 
 def selectOption(arr, last_selected, side='x'):
+    # print("you have to select a number with 15 seconds")
+    # countdown(15)
     new_arr = []
     new_selected = 0
     side = 'x'
@@ -71,7 +76,7 @@ def selectOption(arr, last_selected, side='x'):
 
 
 def minimax(arr, node, depth=0, nodeid=1, prev=0):
-    
+
     if len(arr) == 1:
         return node.key
 
@@ -86,14 +91,16 @@ def minimax(arr, node, depth=0, nodeid=1, prev=0):
             if(len(arr) > 1):
                 res = minimax(arr[1:], node.left, depth+1, nodeid*2, first)
             x = max(x, res)
+            
+            
         if last > prev and node.right is not None:
             res = 1
             if(len(arr) > 1):
                 res = minimax(arr[:-1], node.right, depth+1, nodeid*2+1, last)
             y = max(y, res)
         node.key = max(x, y)
-        
-        print("max : ", arr, node.key,nodeid)
+
+        # print("max : ", arr, node.key, nodeid)
         return node.key
 
     if depth % 2 == 1:
@@ -105,16 +112,26 @@ def minimax(arr, node, depth=0, nodeid=1, prev=0):
             if(len(arr) > 1):
                 res = minimax(arr[1:], node.left, depth+1, nodeid*2, first)
             x = min(x, res)
+
         if last > prev and node.right is not None:
             res = -1
             if(len(arr) > 1):
                 res = minimax(arr[:-1], node.right, depth+1, nodeid*2+1, last)
             y = min(y, res)
+            
         node.key = min(x, y)
-        print("min : ", arr, node.key, nodeid)
+        # print("min : ", arr, node.key, nodeid)
         return node.key
 
 
+import time
+def countdown(t):
+    while t >= 0:
+        mins, secs = divmod(t, 60)
+        timer = ' ' + '{:02d}:{:02d}'.format(mins, secs)
+        print(timer, end='')
+        time.sleep(1)
+        t -= 1
 
 def gamePlay(arr, node, depth=0, prev=0):
     if len(arr) == 1:
@@ -133,16 +150,16 @@ def gamePlay(arr, node, depth=0, prev=0):
             if side == 'left':
                 return gamePlay(newArr, node.left, depth + 1, last_selected)
             elif side == 'right':
-                return gamePlay(newArr, node.right, depth + 1, last_selected)   
+                return gamePlay(newArr, node.right, depth + 1, last_selected)
     # AI's turn
     if depth % 2 == 1:
         x = 1
         y = 1
         # print("AI's turn , prev, first, last arr[]", prev, first, last, arr)
-        if first > prev:
+        if first > prev and node.left is not None:
             if len(arr) > 1:
                 x = min(x, node.left.key)
-        if last > prev:
+        if last > prev and node.right is not None:
             if len(arr) > 1:
                 y = min(y, node.right.key)
         # print("value x, y ", x,y)
@@ -165,6 +182,7 @@ def gamePlay(arr, node, depth=0, prev=0):
                 exit(0)
 
 
+     
 # arr = list(map(int, input().split()))
 # arr = [5, 8, 1, 10, 9]
 # arr = [5, 7, 10 ,6]
@@ -183,12 +201,31 @@ def gamePlay(arr, node, depth=0, prev=0):
 # x = tree(arr,0,1)
 # printTree(x)
 
-# arr = []
+left = []
+middle = []
+right = []
 
-import random
-ncount = random.randint(3,12)
-arr = random.sample(range(1,20), ncount)
-print("ncount arr[]", ncount, arr)
+left = random.sample(range(1, 12), 3)
+left.sort()
+
+middle = random.sample(range(10, 25), 5)
+
+right = random.sample(range(8, 20), 4)
+right.sort(reverse=True)
+
+arr = []
+arr.extend(left)
+arr.extend(middle)
+arr.extend(right)
+
+
+# ncount = random.randint(5, 12)
+# arr = random.sample(range(1, ncount+1), ncount)
+# print("ncount arr[]", ncount, arr)
+
+print(arr)
+
+# arr = [1,2,3,6,5,4]
 
 gt = gameTree(arr, 0)
 ans = minimax(arr, gt)
