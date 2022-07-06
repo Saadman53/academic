@@ -24,7 +24,7 @@ class GUI:
             x += 2
 
     def plot(self, text):
-        fig, ax = plt.subplots(figsize=(16, 9))
+        fig, ax = plt.subplots(figsize=(14, 8))
         ax = fig.add_subplot(111)
         for i in range(self.length):
 
@@ -63,45 +63,6 @@ class Node:
         self.left = left
         self.right = right
 
-# def gameTree(arr, prev=0, depth=0):
-#     if not arr:
-#         return None
-#     first, last = arr[0], arr[-1]
-#     newNode = Node()
-#     if first > prev:
-#         newNode.left = gameTree(arr[1:], first, depth+1)
-#     if last > prev:
-#         newNode.right = gameTree(arr[:-1], last, depth+1)
-#     if newNode.left is None and newNode.right is None:
-#         if depth % 2 == 0:
-#             newNode.key = -1
-#         else:
-#             newNode.key = 1
-#     return newNode
-
-
-# def minimax(arr, node, depth=0, prev=0):
-#     # if len(arr) == 1:
-#     #     return node.key
-#     first, last = arr[0], arr[-1]
-#     # max player
-#     if depth % 2 == 0:
-#         temp = -1
-#         if first > prev and node.left is not None:
-#             temp = max(temp, minimax(arr[1:], node.left, depth+1, first))
-#         if last > prev and node.right is not None:
-#             temp = max(temp, minimax(arr[:-1], node.right, depth+1, last))
-#         node.key = temp
-#         return node.key
-#     # min player
-#     if depth % 2 == 1:
-#         temp = 1
-#         if first > prev and node.left is not None:
-#             temp = min(temp, minimax(arr[1:], node.left, depth+1, first))
-#         if last > prev and node.right is not None:
-#             temp = min(temp, minimax(arr[:-1], node.right, depth+1, last))
-#         node.key = temp
-#         return node.key
 
 def minimax(arr, depth=0, prev=0):
     first, last = arr[0], arr[-1]
@@ -158,7 +119,7 @@ def gamePlay(arr, node, ui, depth=0, prev=0):
     # if len(arr) == 1:
     #     return node.key
     first, last = arr[0], arr[-1]
-    # player 1's turn
+    # human's turn
     if depth % 2 == 0:
         if prev == 0:
             ui.plot("Choose any number from left or right")
@@ -170,7 +131,7 @@ def gamePlay(arr, node, ui, depth=0, prev=0):
 
         newArr, last_selected, side = selectOption(arr, prev, ui)
 
-        if len(arr):
+        if len(newArr):
             if side == 'left':
                 return gamePlay(newArr, node.left, ui, depth + 1, last_selected)
             elif side == 'right':
@@ -179,7 +140,7 @@ def gamePlay(arr, node, ui, depth=0, prev=0):
     if depth % 2 == 1:
         ui.plot(f"Human selected {prev}")
         print("AI is taking it's time...")
-        time.sleep(1)
+        time.sleep(2)
         if first > prev and node.left is not None and node.left.key == -1:
             ui.remove_circle('l')
             return gamePlay(arr[1:], node.left, ui, depth+1, first)
@@ -232,7 +193,7 @@ def selectOption(arr, last_selected, ui, side='x'):
 
 tnc = 0
 while True:
-    x = int(input('Enter the number of circles (atleast 3): '))
+    x = int(input('Enter the number of balls (atleast 3): '))
     if x >= 3:
         tnc = x
         break
